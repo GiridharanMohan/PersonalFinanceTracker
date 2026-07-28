@@ -20,5 +20,5 @@ public class Category {
     private String name;
 
     @NotBlank(message = "Please specify a type")
-    private String type;
+    private TransactionType type;
 }
