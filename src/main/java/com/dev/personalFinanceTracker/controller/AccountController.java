@@ -24,16 +24,16 @@ public class AccountController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<AccountResponseDto> showAccount(@PathVariable long id){
-        return new ResponseEntity<>(accountService.showAccount(id, HttpStatus.ACCEPTED));
+        return new ResponseEntity<>(accountService.showAccount(id), HttpStatus.ACCEPTED);
     }
 
     @PutMapping(path = "/edit-account")
     public ResponseEntity<String> editAccount(@Valid @RequestBody AccountRequestDto accountRequestDto){
-        return new ResponseEntity<>(accountService.editAccount(accountRequestDto, HttpStatus.ACCEPTED));
+        return new ResponseEntity<>(accountService.editAccount(accountRequestDto), HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping(path = "/delete-account/{id}")
     public ResponseEntity<String> deleteAccount(@PathVariable long id){
-        return new ResponseEntity<>(accountService.deleteAccount(id, HttpStatus.ACCEPTED));
+        return new ResponseEntity<>(accountService.deleteAccount(id), HttpStatus.ACCEPTED);
     }
 }

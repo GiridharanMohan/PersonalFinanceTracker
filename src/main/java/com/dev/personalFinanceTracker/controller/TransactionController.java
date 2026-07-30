@@ -24,7 +24,7 @@ public class TransactionController {
 
     @DeleteMapping(path = "/delete-transaction/{id}")
     public ResponseEntity<String> deleteTransaction(@PathVariable long id){
-        return new ResponseEntity<>(transactionService.deleteTransaction(id, HttpStatus.ACCEPTED));
+        return new ResponseEntity<>(transactionService.deleteTransaction(id), HttpStatus.ACCEPTED);
     }
 
     @GetMapping(path = "/fetch-transactions")

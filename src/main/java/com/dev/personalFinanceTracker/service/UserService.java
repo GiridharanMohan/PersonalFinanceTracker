@@ -7,9 +7,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-    public String userLogin(@Valid UserRequestDto user) {
+    public String userLogin(UserRequestDto user) {
     }
 
-    public String userSignUp(@Valid User user) {
+    public String userSignUp(User user) {
+        return null;
     }
 }

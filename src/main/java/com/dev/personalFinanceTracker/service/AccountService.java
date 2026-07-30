@@ -2,6 +2,7 @@ package com.dev.personalFinanceTracker.service;
 
 import com.dev.personalFinanceTracker.model.Account;
 import com.dev.personalFinanceTracker.model.dto.AccountRequestDto;
+import com.dev.personalFinanceTracker.model.dto.AccountResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -9,15 +10,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccountService {
-    public String createAccount(@Valid Account account) {
+    public String createAccount(Account account) {
     }
 
-    public HttpStatusCode showAccount(long id, HttpStatus httpStatus) {
+    public AccountResponseDto showAccount(long id) {
     }
 
-    public HttpStatusCode editAccount(@Valid AccountRequestDto accountRequestDto, HttpStatus httpStatus) {
+    public String editAccount(AccountRequestDto accountRequestDto) {
     }
 
-    public HttpStatusCode deleteAccount(long id, HttpStatus httpStatus) {
+    public String deleteAccount(long id) {
+        return null;
     }
 }

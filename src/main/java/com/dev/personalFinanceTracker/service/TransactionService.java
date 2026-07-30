@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 public class TransactionService {
-    public String createTransaction(@Valid TransactionRequestDto transactionRequestDto) {
+    public String createTransaction(TransactionRequestDto transactionRequestDto) {
     }
 
     public Page<TransactionResponseDto> getMonthlySummary(int month, int year, int page, int size) {
@@ -21,9 +21,10 @@ public class TransactionService {
     public List<TransactionResponseDto> getFinanceBreakdown(int month, int year, int page, int size) {
     }
 
-    public HttpStatusCode deleteTransaction(long id, HttpStatus httpStatus) {
+    public String deleteTransaction(long id) {
     }
 
     public Page<TransactionResponseDto> getAllTransaction() {
+        return null;
     }
 }
