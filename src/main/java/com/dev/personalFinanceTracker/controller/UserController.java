@@ -2,6 +2,7 @@ package com.dev.personalFinanceTracker.controller;
 
 import com.dev.personalFinanceTracker.model.User;
 import com.dev.personalFinanceTracker.model.dto.UserRequestDto;
+import com.dev.personalFinanceTracker.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
