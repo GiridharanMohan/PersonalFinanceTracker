@@ -16,7 +16,7 @@ public class JwtUtil {
     private final Key secretKey = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
 
-    public String generateToke(String email){
+    public String generateToken(String email){
         return Jwts.builder()
                 .subject(email)
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION))
