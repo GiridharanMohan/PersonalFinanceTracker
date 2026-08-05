@@ -65,7 +65,14 @@ public class AccountService {
     }
 
     public ResponseDto<AccountResponseDto> editAccount(AccountRequestDto accountRequestDto) {
-        return null;
+        String msg = "Account does not exists";
+        User user = util.getCurrentUser();
+
+        Account account = accountRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException(msg));
+        account.setName(accountRequestDto.getName());
+        accountRepository.save(account);
+        return new ResponseDto<>(true, "Changes are done successfully", null);
     }
 
     public ResponseDto<String> deleteAccount() {
