@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class ResponseDto<T> {
     private boolean success;
 
-    private String message;
+    private String error;
 
     @Nullable
     private T data;

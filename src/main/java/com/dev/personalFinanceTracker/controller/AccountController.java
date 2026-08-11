@@ -28,7 +28,7 @@ public class AccountController {
     }
 
     @PutMapping(path = "/edit-account")
-    public ResponseEntity<ResponseDto<AccountResponseDto>> editAccount(@Valid @RequestBody AccountRequestDto accountRequestDto){
+    public ResponseEntity<ResponseDto<String>> editAccount(@Valid @RequestBody AccountRequestDto accountRequestDto){
         return new ResponseEntity<>(accountService.editAccount(accountRequestDto), HttpStatus.OK);
     }
 

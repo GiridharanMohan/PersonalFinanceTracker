@@ -40,8 +40,8 @@ public class UserService {
 
         return new ResponseDto<>(
                 true,
-                "Successfully Logged in",
-                jwtUtil.generateToken(email));
+                null,
+                "token: "+jwtUtil.generateToken(email));
     }
 
     public ResponseDto<String> userSignUp(User user) {
@@ -56,8 +56,8 @@ public class UserService {
 
         return new ResponseDto<>(
                 true,
-                "Successfully registered",
-                null
+                null,
+                "Successfully registered"
                 );
     }
 }

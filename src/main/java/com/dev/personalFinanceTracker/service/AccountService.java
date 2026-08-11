@@ -41,7 +41,7 @@ public class AccountService {
             responseEntity.setName(account.getName());
             responseEntity.setBalance(new BigDecimal(0));
             accountRepository.save(responseEntity);
-            return new ResponseDto<>(true,"successfully saved account",null);
+            return new ResponseDto<>(true,null,"successfully saved account");
         }catch (Exception e) {
             log.error("Exception occurred while creating account - {}", e.getMessage());
             return new ResponseDto<>(false, "Error creating the account", null);
@@ -61,10 +61,10 @@ public class AccountService {
         responseEntity.setName(myAccount.getName());
         responseEntity.setEmail(myAccount.getUser().getEmail());
         responseEntity.setBalance(myAccount.getBalance());
-        return new ResponseDto<>(true, "Successfully found the linked account", responseEntity);
+        return new ResponseDto<>(true, null, responseEntity);
     }
 
-    public ResponseDto<AccountResponseDto> editAccount(AccountRequestDto accountRequestDto) {
+    public ResponseDto<String> editAccount(AccountRequestDto accountRequestDto) {
         String msg = "Account does not exists";
         User user = util.getCurrentUser();
 
@@ -72,7 +72,7 @@ public class AccountService {
                 .orElseThrow(() -> new RuntimeException(msg));
         account.setName(accountRequestDto.getName());
         accountRepository.save(account);
-        return new ResponseDto<>(true, "Changes are done successfully", null);
+        return new ResponseDto<>(true, null, "Changes are done successfully");
     }
 
     public ResponseDto<String> deleteAccount() {
@@ -83,7 +83,7 @@ public class AccountService {
                     .orElseThrow(() -> new RuntimeException(msg));
 
             accountRepository.deleteById(account.getId());
-            return new ResponseDto<>(true, "Account deleted successfully", null);
+            return new ResponseDto<>(true, null, "Account deleted successfully");
         } catch (Exception e) {
             log.error("Error occurred while deleting the account - {}", e.getMessage());
             return new ResponseDto<>(false, msg, null);
