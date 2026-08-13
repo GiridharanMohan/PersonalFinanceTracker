@@ -19,6 +19,7 @@ public class Category {
     @NotBlank(message = "Name is required")
     private String name;
 
+    //here type refers to income or expenditure
     @NotBlank(message = "Please specify a type")
     private TransactionType type;
 }

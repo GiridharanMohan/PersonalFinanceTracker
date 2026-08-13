@@ -1,15 +1,20 @@
 package com.dev.personalFinanceTracker.service;
 
 import com.dev.personalFinanceTracker.model.User;
+import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.model.dto.UserRequestDto;
 import com.dev.personalFinanceTracker.repository.UserRepository;
+import com.dev.personalFinanceTracker.util.Constant;
 import com.dev.personalFinanceTracker.util.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -22,19 +27,37 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public String userLogin(UserRequestDto user) {
-        if(user != null && user.getEmail() != null){
-            String email = user.getEmail();
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isPresent() && passwordEncoder.matches(user.getPassword(), optionalUser.get().getPassword())){
-                return jwtUtil.generateToken(email);
-            }
-            return "User is not available. Please sign up first.";
+    public ResponseDto<String> userLogin(UserRequestDto user) {
+
+        String email = user.getEmail();
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if(optionalUser.isEmpty() ||
+                !passwordEncoder.matches(user.getPassword(), optionalUser.get().getPassword())) {
+            log.error("Invalid email or password. Email: {}", email);
+            throw new UsernameNotFoundException(Constant.INVALID_CREDENTIALS);
         }
-        return "Not a valid email";
+
+        return new ResponseDto<>(
+                true,
+                null,
+                jwtUtil.generateToken(email));
     }
 
-    public String userSignUp(User user) {
-        return null;
+    public ResponseDto<String> userSignUp(User user) {
+        String email = user.getEmail();
+        if(userRepository.findByEmail(email).isPresent()) {
+            log.error("User already exists. Email: {}", email);
+            throw new RuntimeException("User already exists. Please login!");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+
+        return new ResponseDto<>(
+                true,
+                null,
+                "Successfully registered"
+                );
     }
 }

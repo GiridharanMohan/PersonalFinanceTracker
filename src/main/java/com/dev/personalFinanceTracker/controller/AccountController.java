@@ -1,8 +1,8 @@
 package com.dev.personalFinanceTracker.controller;
 
-import com.dev.personalFinanceTracker.model.Account;
 import com.dev.personalFinanceTracker.model.dto.AccountRequestDto;
 import com.dev.personalFinanceTracker.model.dto.AccountResponseDto;
+import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.service.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,22 +18,22 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping(path = "/create-account")
-    public ResponseEntity<String> createAccount(@Valid @RequestBody Account account){
+    public ResponseEntity<ResponseDto<String>> createAccount(@Valid @RequestBody AccountRequestDto account){
         return new ResponseEntity<>(accountService.createAccount(account),HttpStatus.CREATED);
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<AccountResponseDto> showAccount(@PathVariable long id){
-        return new ResponseEntity<>(accountService.showAccount(id), HttpStatus.ACCEPTED);
+    @GetMapping(path = "/myAccount")
+    public ResponseEntity<ResponseDto<AccountResponseDto>> showAccount(){
+        return new ResponseEntity<>(accountService.showAccount(), HttpStatus.OK);
     }
 
     @PutMapping(path = "/edit-account")
-    public ResponseEntity<String> editAccount(@Valid @RequestBody AccountRequestDto accountRequestDto){
-        return new ResponseEntity<>(accountService.editAccount(accountRequestDto), HttpStatus.ACCEPTED);
+    public ResponseEntity<ResponseDto<String>> editAccount(@Valid @RequestBody AccountRequestDto accountRequestDto){
+        return new ResponseEntity<>(accountService.editAccount(accountRequestDto), HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "/delete-account/{id}")
-    public ResponseEntity<String> deleteAccount(@PathVariable long id){
-        return new ResponseEntity<>(accountService.deleteAccount(id), HttpStatus.ACCEPTED);
+    @DeleteMapping(path = "/delete-account")
+    public ResponseEntity<ResponseDto<String>> deleteAccount(){
+        return new ResponseEntity<>(accountService.deleteAccount(), HttpStatus.OK);
     }
 }
