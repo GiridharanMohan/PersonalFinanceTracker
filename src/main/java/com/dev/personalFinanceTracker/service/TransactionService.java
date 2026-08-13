@@ -67,7 +67,7 @@ public class TransactionService {
         Account account = accountRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException(Constant.ACCOUNT_NOT_FOUND));
 
-        Long accountId = transactionRepository.findAccountIdById(id)
+        Long accountId = transactionRepository.findAccountIdByTransactionId(id)
                 .orElseThrow(() -> new RuntimeException(Constant.TRANSACTION_NOT_FOUND));
 
         if(accountId != account.getId())
