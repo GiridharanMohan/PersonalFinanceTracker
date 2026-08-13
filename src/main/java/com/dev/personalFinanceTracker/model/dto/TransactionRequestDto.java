@@ -1,7 +1,9 @@
 package com.dev.personalFinanceTracker.model.dto;
 
-import com.dev.personalFinanceTracker.model.TransactionType;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
