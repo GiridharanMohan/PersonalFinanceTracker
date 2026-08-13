@@ -41,7 +41,7 @@ public class UserService {
         return new ResponseDto<>(
                 true,
                 null,
-                "token: "+jwtUtil.generateToken(email));
+                jwtUtil.generateToken(email));
     }
 
     public ResponseDto<String> userSignUp(User user) {

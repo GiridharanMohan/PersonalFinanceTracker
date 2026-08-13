@@ -1,5 +1,6 @@
 package com.dev.personalFinanceTracker.controller;
 
+import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.model.dto.TransactionRequestDto;
 import com.dev.personalFinanceTracker.model.dto.TransactionResponseDto;
 import com.dev.personalFinanceTracker.service.TransactionService;
@@ -18,18 +19,18 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @PostMapping(path = "/add-transaction")
-    public ResponseEntity<String> createTransaction(@Valid @RequestBody TransactionRequestDto transactionRequestDto){
+    public ResponseEntity<ResponseDto<String>> createTransaction(@Valid @RequestBody TransactionRequestDto transactionRequestDto){
         return new ResponseEntity<>(transactionService.createTransaction(transactionRequestDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "/delete-transaction/{id}")
-    public ResponseEntity<String> deleteTransaction(@PathVariable long id){
-        return new ResponseEntity<>(transactionService.deleteTransaction(id), HttpStatus.ACCEPTED);
+    public ResponseEntity<ResponseDto<String>> deleteTransaction(@PathVariable long id){
+        return new ResponseEntity<>(transactionService.deleteTransaction(id), HttpStatus.OK);
     }
 
     @GetMapping(path = "/fetch-transactions")
-    public ResponseEntity<Page<TransactionResponseDto>> getAllTransaction(@RequestParam int page, @RequestParam int size){
-        return new ResponseEntity<>(transactionService.getAllTransaction(), HttpStatus.ACCEPTED);
+    public ResponseEntity<Page<TransactionResponseDto>> getAllTransaction(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size){
+        return new ResponseEntity<>(transactionService.getAllTransaction(page, size), HttpStatus.OK);
     }
 
 //    public ResponseEntity<Page<TransactionResponseDto>> getAllTransactionByFilter(@RequestParam long id, @RequestParam String type, @RequestParam String expenseName, @RequestParam)

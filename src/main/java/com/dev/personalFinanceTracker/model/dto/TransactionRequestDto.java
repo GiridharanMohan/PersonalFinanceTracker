@@ -17,5 +17,8 @@ public class TransactionRequestDto {
     @NotBlank(message = "Please specify a type")
     private TransactionType type;
 
+    @NotNull(message = "amount cannot be null")
+    @DecimalMin(value = "0.01", message = "amount should be greater than zero")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal amount;
 }

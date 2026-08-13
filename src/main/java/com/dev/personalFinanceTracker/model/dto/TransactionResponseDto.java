@@ -1,9 +1,9 @@
 package com.dev.personalFinanceTracker.model.dto;
 
-import com.dev.personalFinanceTracker.model.TransactionType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,7 +12,7 @@ public class TransactionResponseDto {
 
     private Long id;
     private String name;
-    private TransactionType type;
-    private String amount;
+    private String type;
+    private BigDecimal amount;
     private LocalDateTime timestamp;
 }
