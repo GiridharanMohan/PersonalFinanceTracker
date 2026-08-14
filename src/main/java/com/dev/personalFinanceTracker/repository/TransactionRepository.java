@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 
@@ -18,4 +19,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query(value = "SELECT t.account FROM transactions t " +
             "WHERE t.transaction_id = :id", nativeQuery = true)
     Optional<Long> findAccountIdByTransactionId(@Param(value = "id") long id);
+
+    @Query(value = "SELECT * FROM transactions t " +
+            "WHERE t.timestamp >= :startDate " +
+            "AND t.timestamp <= :endDate", nativeQuery = true)
+    Page<Transaction> getAllTransactionsByMonthAndYear(LocalDate startDate, LocalDate endDate, Pageable pageable);
 }

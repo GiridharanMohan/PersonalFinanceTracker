@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class TransactionResponseDto {
 
     private Long id;
+    private Long accountId;
     private String name;
     private String type;
     private BigDecimal amount;

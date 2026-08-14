@@ -18,7 +18,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 
 @Service
@@ -55,7 +57,29 @@ public class TransactionService {
     }
 
     public Page<TransactionResponseDto> getMonthlySummary(int month, int year, int page, int size) {
-        return null;
+        User currentUser = util.getCurrentUser();
+        Account userAccount = accountRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException(Constant.ACCOUNT_NOT_FOUND));
+
+        LocalDate startDate = YearMonth.of(year, month).atDay(1);
+        LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
+        Page<Transaction> responseEntities = transactionRepository.getAllTransactionsByMonthAndYear(
+                                                                    startDate,
+                                                                    endDate,
+                                                                    PageRequest.of(--page, size));
+
+        Page<TransactionResponseDto> response = responseEntities.map(transaction -> {
+            TransactionResponseDto responseEntity = new TransactionResponseDto();
+            responseEntity.setId(transaction.getId());
+            responseEntity.setAccountId(userAccount.getId());
+            responseEntity.setName(transaction.getCategory().getName());
+            responseEntity.setType(transaction.getCategory().getType());
+            responseEntity.setAmount(transaction.getAmount());
+            responseEntity.setTimestamp(transaction.getTimestamp());
+            return responseEntity;
+        });
+
+        return response;
     }
 
     public List<TransactionResponseDto> getFinanceBreakdown(int month, int year, int page, int size) {
@@ -90,6 +114,7 @@ public class TransactionService {
         Page<TransactionResponseDto> responseEntities = transactions.map(transaction -> {
             TransactionResponseDto responseEntity = new TransactionResponseDto();
             responseEntity.setId(transaction.getId());
+            responseEntity.setAccountId(userAccount.getId());
             responseEntity.setName(transaction.getCategory().getName());
             responseEntity.setType(transaction.getCategory().getType());
             responseEntity.setAmount(transaction.getAmount());
