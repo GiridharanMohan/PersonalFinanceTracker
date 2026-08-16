@@ -12,8 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 public class UserService {
@@ -30,10 +28,10 @@ public class UserService {
     public ResponseDto<String> userLogin(UserRequestDto user) {
 
         String email = user.getEmail();
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        User requestedUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException(Constant.INVALID_CREDENTIALS));
 
-        if(optionalUser.isEmpty() ||
-                !passwordEncoder.matches(user.getPassword(), optionalUser.get().getPassword())) {
+        if(!passwordEncoder.matches(user.getPassword(), requestedUser.getPassword())) {
             log.error("Invalid email or password. Email: {}", email);
             throw new UsernameNotFoundException(Constant.INVALID_CREDENTIALS);
         }
