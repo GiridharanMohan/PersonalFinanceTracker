@@ -1,9 +1,6 @@
 package com.dev.personalFinanceTracker.service;
 
-import com.dev.personalFinanceTracker.model.Account;
-import com.dev.personalFinanceTracker.model.Category;
-import com.dev.personalFinanceTracker.model.Transaction;
-import com.dev.personalFinanceTracker.model.User;
+import com.dev.personalFinanceTracker.model.*;
 import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.model.dto.TransactionRequestDto;
 import com.dev.personalFinanceTracker.model.dto.TransactionResponseDto;
@@ -12,6 +9,7 @@ import com.dev.personalFinanceTracker.repository.CategoryRepository;
 import com.dev.personalFinanceTracker.repository.TransactionRepository;
 import com.dev.personalFinanceTracker.util.Constant;
 import com.dev.personalFinanceTracker.util.Util;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,8 +19,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class TransactionService {
 
@@ -82,8 +84,21 @@ public class TransactionService {
         return response;
     }
 
-    public List<TransactionResponseDto> getFinanceBreakdown(int month, int year, int page, int size) {
-        return null;
+    public ResponseDto<Map<String, Double>> getFinanceBreakdownByMonth(int month, int year) {
+        User currentUser = util.getCurrentUser();
+        Account userAccount = accountRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException(Constant.ACCOUNT_NOT_FOUND));
+
+        String monthOfYear = YearMonth.of(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        List<Transaction> transactionEntities = transactionRepository.findAllTransactionsByAccountIdAndYearMonth(userAccount.getId(), monthOfYear);
+        log.info("Fetching Transactions from the Account ID: {}, Year and Month: {}", userAccount.getId(), monthOfYear);
+
+        Map<String, Double> groupedTransactions = transactionEntities.stream()
+                .filter(entity -> TransactionType.EXPENSE.name().equals(entity.getCategory().getType()))
+                .collect(Collectors.groupingBy(t -> t.getCategory().getName(),
+                        Collectors.summingDouble(t -> t.getAmount().doubleValue())));
+
+        return new ResponseDto<>(true, null, groupedTransactions);
     }
 
     public ResponseDto<String> deleteTransaction(long id) {

@@ -1,5 +1,6 @@
 package com.dev.personalFinanceTracker.controller;
 
+import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.model.dto.TransactionResponseDto;
 import com.dev.personalFinanceTracker.service.TransactionService;
 import jakarta.validation.constraints.Max;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/analytics")
@@ -26,15 +27,15 @@ public class AnalyticsController {
     @GetMapping(path = "/summary")
     public ResponseEntity<Page<TransactionResponseDto>> getMonthlySummary(@RequestParam @Min(1) @Max(12) int month,
                                                                           @RequestParam @Min(1) @Max(3000) int year,
-                                                                          @RequestParam int page, @RequestParam int size){
+                                                                          @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size){
         return new ResponseEntity<>(transactionService.getMonthlySummary(month, year, page, size), HttpStatus.OK);
     }
 
     /*used to group the transactions along with the details and show to the user
     in a diagrammatical format such as pie chart, bar chart, etc.*/
     @GetMapping(path = "/break-down")
-    public ResponseEntity<List<TransactionResponseDto>> getFinanceBreakdown(@RequestParam int month, @RequestParam int year,
-                                                                            @RequestParam int page, @RequestParam int size){
-        return new ResponseEntity<>(transactionService.getFinanceBreakdown(month, year, page, size), HttpStatus.ACCEPTED);
+    public ResponseEntity<ResponseDto<Map<String, Double>>> getFinanceBreakdown(@RequestParam @Min(1) @Max(12) int month,
+                                                                                @RequestParam @Min(1) @Max(3000) int year){
+        return new ResponseEntity<>(transactionService.getFinanceBreakdownByMonth(month, year), HttpStatus.ACCEPTED);
     }
 }
