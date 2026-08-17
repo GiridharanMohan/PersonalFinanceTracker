@@ -5,7 +5,6 @@ import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.model.dto.TransactionRequestDto;
 import com.dev.personalFinanceTracker.model.dto.TransactionResponseDto;
 import com.dev.personalFinanceTracker.repository.AccountRepository;
-import com.dev.personalFinanceTracker.repository.CategoryRepository;
 import com.dev.personalFinanceTracker.repository.TransactionRepository;
 import com.dev.personalFinanceTracker.util.Constant;
 import com.dev.personalFinanceTracker.util.Util;
@@ -35,9 +34,6 @@ public class TransactionService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
     private TransactionRepository transactionRepository;
 
     public ResponseDto<String> createTransaction(TransactionRequestDto transactionRequestDto) {
@@ -45,13 +41,11 @@ public class TransactionService {
         Account account = accountRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException(Constant.ACCOUNT_NOT_FOUND));
 
-        Category categoryEntity = new Category();
-        categoryEntity.setType(transactionRequestDto.getType());
-        categoryEntity.setName(transactionRequestDto.getExpenseName());
-        categoryEntity = categoryRepository.save(categoryEntity);
         Transaction transactionEntity = new Transaction();
         transactionEntity.setAccount(account);
-        transactionEntity.setCategory(categoryEntity);
+        transactionEntity.setTransactionName(transactionRequestDto.getTransactionName());
+        transactionEntity.setTransactionType(transactionRequestDto.getTransactionType());
+        transactionEntity.setTransactionCategory(transactionRequestDto.getTransactionCategory());
         transactionEntity.setAmount(transactionRequestDto.getAmount());
         transactionEntity.setTimestamp(LocalDateTime.now());
         transactionRepository.save(transactionEntity);
@@ -74,8 +68,9 @@ public class TransactionService {
             TransactionResponseDto responseEntity = new TransactionResponseDto();
             responseEntity.setId(transaction.getId());
             responseEntity.setAccountId(userAccount.getId());
-            responseEntity.setName(transaction.getCategory().getName());
-            responseEntity.setType(transaction.getCategory().getType());
+            responseEntity.setName(transaction.getTransactionName());
+            responseEntity.setType(transaction.getTransactionType());
+            responseEntity.setCategory(transaction.getTransactionCategory());
             responseEntity.setAmount(transaction.getAmount());
             responseEntity.setTimestamp(transaction.getTimestamp());
             return responseEntity;
@@ -84,7 +79,7 @@ public class TransactionService {
         return response;
     }
 
-    public ResponseDto<Map<String, Double>> getFinanceBreakdownByMonth(int month, int year) {
+    public ResponseDto<Map<Category, Double>> getFinanceBreakdownByMonth(int month, int year) {
         User currentUser = util.getCurrentUser();
         Account userAccount = accountRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new RuntimeException(Constant.ACCOUNT_NOT_FOUND));
@@ -93,9 +88,9 @@ public class TransactionService {
         List<Transaction> transactionEntities = transactionRepository.findAllTransactionsByAccountIdAndYearMonth(userAccount.getId(), monthOfYear);
         log.info("Fetching Transactions from the Account ID: {}, Year and Month: {}", userAccount.getId(), monthOfYear);
 
-        Map<String, Double> groupedTransactions = transactionEntities.stream()
-                .filter(entity -> TransactionType.EXPENSE.name().equals(entity.getCategory().getType()))
-                .collect(Collectors.groupingBy(t -> t.getCategory().getName(),
+        Map<Category, Double> groupedTransactions = transactionEntities.stream()
+                .filter(entity -> TransactionType.EXPENSE.equals(entity.getTransactionType()))
+                .collect(Collectors.groupingBy(Transaction::getTransactionCategory,
                         Collectors.summingDouble(t -> t.getAmount().doubleValue())));
 
         return new ResponseDto<>(true, null, groupedTransactions);
@@ -130,8 +125,9 @@ public class TransactionService {
             TransactionResponseDto responseEntity = new TransactionResponseDto();
             responseEntity.setId(transaction.getId());
             responseEntity.setAccountId(userAccount.getId());
-            responseEntity.setName(transaction.getCategory().getName());
-            responseEntity.setType(transaction.getCategory().getType());
+            responseEntity.setName(transaction.getTransactionName());
+            responseEntity.setType(transaction.getTransactionType());
+            responseEntity.setCategory(transaction.getTransactionCategory());
             responseEntity.setAmount(transaction.getAmount());
             responseEntity.setTimestamp(transaction.getTimestamp());
             return responseEntity;

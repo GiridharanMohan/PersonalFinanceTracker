@@ -1,5 +1,6 @@
 package com.dev.personalFinanceTracker.controller;
 
+import com.dev.personalFinanceTracker.model.Category;
 import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.model.dto.TransactionResponseDto;
 import com.dev.personalFinanceTracker.service.TransactionService;
@@ -34,8 +35,8 @@ public class AnalyticsController {
     /*used to group the transactions along with the details and show to the user
     in a diagrammatical format such as pie chart, bar chart, etc.*/
     @GetMapping(path = "/break-down")
-    public ResponseEntity<ResponseDto<Map<String, Double>>> getFinanceBreakdown(@RequestParam @Min(1) @Max(12) int month,
-                                                                                @RequestParam @Min(1) @Max(3000) int year){
-        return new ResponseEntity<>(transactionService.getFinanceBreakdownByMonth(month, year), HttpStatus.ACCEPTED);
+    public ResponseEntity<ResponseDto<Map<Category, Double>>> getFinanceBreakdown(@RequestParam @Min(1) @Max(12) int month,
+                                                                                  @RequestParam @Min(1) @Max(3000) int year){
+        return new ResponseEntity<>(transactionService.getFinanceBreakdownByMonth(month, year), HttpStatus.OK);
     }
 }
