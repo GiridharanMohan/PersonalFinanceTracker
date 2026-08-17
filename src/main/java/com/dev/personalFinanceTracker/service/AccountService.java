@@ -31,21 +31,16 @@ public class AccountService {
     //currently 1 user can have 1 account
     //but actual plan is to make 1 person can have multiple accounts.
     public ResponseDto<String> createAccount(AccountRequestDto account) {
-        try {
-            User currentUser = util.getCurrentUser();
-            if(accountRepository.findByUserId(currentUser.getId()).isPresent())
-                throw new RuntimeException("Account already exists for the user");
+        User currentUser = util.getCurrentUser();
+        if(accountRepository.findByUserId(currentUser.getId()).isPresent())
+            throw new RuntimeException("Account already exists for the user");
 
-            Account responseEntity = new Account();
-            responseEntity.setUser(currentUser);
-            responseEntity.setName(account.getName());
-            responseEntity.setBalance(new BigDecimal(0));
-            accountRepository.save(responseEntity);
-            return new ResponseDto<>(true,null,"successfully saved account");
-        }catch (Exception e) {
-            log.error("Exception occurred while creating account - {}", e.getMessage());
-            return new ResponseDto<>(false, "Error creating the account", null);
-        }
+        Account responseEntity = new Account();
+        responseEntity.setUser(currentUser);
+        responseEntity.setName(account.getName());
+        responseEntity.setBalance(new BigDecimal(0));
+        accountRepository.save(responseEntity);
+        return new ResponseDto<>(true,null,"successfully saved account");
     }
 
     public ResponseDto<AccountResponseDto> showAccount() {
@@ -75,6 +70,7 @@ public class AccountService {
         return new ResponseDto<>(true, null, "Changes are done successfully");
     }
 
+    //Todo: when deleting an account, the associated transactions should also be deleted.
     public ResponseDto<String> deleteAccount() {
         String msg = "Account does not exists";
         try {
