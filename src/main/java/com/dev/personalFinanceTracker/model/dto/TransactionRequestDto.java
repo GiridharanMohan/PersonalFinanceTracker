@@ -18,9 +18,10 @@ public class TransactionRequestDto {
     @NotBlank(message = "Name is required")
     private String transactionName;
 
-    @NotBlank(message = "Please specify a type")
+    @NotNull(message = "Please specify a type")
     private TransactionType transactionType;
 
+    @NotNull(message = "Please specify the category")
     private Category transactionCategory;
 
     @NotNull(message = "amount cannot be null")
