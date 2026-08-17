@@ -25,10 +25,12 @@ public class Transaction {
     private String transactionName;
 
     //type refers to income/expense.
+    @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", nullable = false)
     private TransactionType transactionType;
 
     //category refers to groups like food, trip, bill, etc.
+    @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private Category transactionCategory;
 
