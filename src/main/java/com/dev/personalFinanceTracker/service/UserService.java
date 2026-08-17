@@ -32,7 +32,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException(Constant.INVALID_CREDENTIALS));
 
         if(!passwordEncoder.matches(user.getPassword(), requestedUser.getPassword())) {
-            log.error("Invalid email or password. Email: {}", email);
+            log.error("Invalid email or password. User ID: {}", requestedUser.getId());
             throw new UsernameNotFoundException(Constant.INVALID_CREDENTIALS);
         }
 
@@ -42,15 +42,17 @@ public class UserService {
                 jwtUtil.generateToken(email));
     }
 
-    public ResponseDto<String> userSignUp(User user) {
+    public ResponseDto<String> userSignUp(UserRequestDto user) {
         String email = user.getEmail();
         if(userRepository.findByEmail(email).isPresent()) {
-            log.error("User already exists. Email: {}", email);
             throw new RuntimeException("User already exists. Please login!");
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        User userEntity = new User();
+        userEntity.setEmail(email);
+        userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
+        userEntity.setCurrency(user.getCurrency());
+        userRepository.save(userEntity);
 
         return new ResponseDto<>(
                 true,

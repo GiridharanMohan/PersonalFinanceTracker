@@ -15,6 +15,9 @@ public class UserRequestDto {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,20}$")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,20}$",
+            message = "Password must contain at least eight characters, one digit, one lowercase, one uppercase, and one special character")
     private String password;
+
+    private String currency;
 }

@@ -21,9 +21,6 @@ public class User {
     @Email(message = "Not a valid email ID")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Pattern(regexp = "^(?!.*\\s)(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "Password must contain at least eight characters, one digit, one lowercase, one uppercase, and one special character")
     private String password;
 
     @NotBlank(message = "please specify the currency")
