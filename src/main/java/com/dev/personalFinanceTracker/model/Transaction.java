@@ -21,9 +21,18 @@ public class Transaction {
     @JoinColumn(name = "account")
     private Account account;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category")
-    private Category category;
+    @Column(name = "transaction_name", nullable = false)
+    private String transactionName;
+
+    //type refers to income/expense.
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type", nullable = false)
+    private TransactionType transactionType;
+
+    //category refers to groups like food, trip, bill, etc.
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false)
+    private Category transactionCategory;
 
     private BigDecimal amount;
 

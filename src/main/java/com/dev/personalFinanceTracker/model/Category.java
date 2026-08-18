@@ -1,25 +1,23 @@
 package com.dev.personalFinanceTracker.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public enum Category {
+    FOOD,
+    TRIP,
+    BILLS,
+    OTHERS,
+    TRANSPORTATION,
+    RENT,
+    GROCERIES,
+    SNACKS,
+    ONLINE_PURCHASE,
+    SUBSCRIPTIONS,
+    MEDICINE,
+    HOSPITAL_BILLS,
+    SAVINGS,
+    LOAN_REPAYMENT,
+    PERSONAL_CARE,
+    MAINTENANCE,
+    ENTERTAINMENT,
+    SHOPPING
 
-@Entity
-@Table(name = "categories")
-@Data
-@NoArgsConstructor
-public class Category {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
-    private Long id;
-
-    @NotBlank(message = "Name is required")
-    private String name;
-
-    //here type refers to income or expenditure
-    @NotBlank(message = "Please specify a type")
-    private TransactionType type;
 }

@@ -1,6 +1,5 @@
 package com.dev.personalFinanceTracker.controller;
 
-import com.dev.personalFinanceTracker.model.User;
 import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.model.dto.UserRequestDto;
 import com.dev.personalFinanceTracker.service.UserService;
@@ -27,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/sign-up")
-    public ResponseEntity<ResponseDto<String>> signUp(@Valid @RequestBody User user){
+    public ResponseEntity<ResponseDto<String>> signUp(@Valid @RequestBody UserRequestDto user){
         ResponseDto<String> responseDto = userService.userSignUp(user);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }

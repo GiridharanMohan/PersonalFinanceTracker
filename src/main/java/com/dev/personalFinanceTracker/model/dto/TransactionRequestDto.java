@@ -1,5 +1,7 @@
 package com.dev.personalFinanceTracker.model.dto;
 
+import com.dev.personalFinanceTracker.model.Category;
+import com.dev.personalFinanceTracker.model.TransactionType;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
@@ -14,10 +16,13 @@ import java.math.BigDecimal;
 public class TransactionRequestDto {
 
     @NotBlank(message = "Name is required")
-    private String expenseName;
+    private String transactionName;
 
-    @NotBlank(message = "Please specify a type")
-    private TransactionType type;
+    @NotNull(message = "Please specify a type")
+    private TransactionType transactionType;
+
+    @NotNull(message = "Please specify the category")
+    private Category transactionCategory;
 
     @NotNull(message = "amount cannot be null")
     @DecimalMin(value = "0.01", message = "amount should be greater than zero")

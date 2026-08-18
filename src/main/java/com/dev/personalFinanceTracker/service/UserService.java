@@ -12,8 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 public class UserService {
@@ -30,11 +28,11 @@ public class UserService {
     public ResponseDto<String> userLogin(UserRequestDto user) {
 
         String email = user.getEmail();
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        User requestedUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(Constant.INVALID_CREDENTIALS));
 
-        if(optionalUser.isEmpty() ||
-                !passwordEncoder.matches(user.getPassword(), optionalUser.get().getPassword())) {
-            log.error("Invalid email or password. Email: {}", email);
+        if(!passwordEncoder.matches(user.getPassword(), requestedUser.getPassword())) {
+            log.error("Invalid email or password. User ID: {}", requestedUser.getId());
             throw new UsernameNotFoundException(Constant.INVALID_CREDENTIALS);
         }
 
@@ -44,15 +42,17 @@ public class UserService {
                 jwtUtil.generateToken(email));
     }
 
-    public ResponseDto<String> userSignUp(User user) {
+    public ResponseDto<String> userSignUp(UserRequestDto user) {
         String email = user.getEmail();
         if(userRepository.findByEmail(email).isPresent()) {
-            log.error("User already exists. Email: {}", email);
             throw new RuntimeException("User already exists. Please login!");
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        User userEntity = new User();
+        userEntity.setEmail(email);
+        userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
+        userEntity.setCurrency(user.getCurrency());
+        userRepository.save(userEntity);
 
         return new ResponseDto<>(
                 true,

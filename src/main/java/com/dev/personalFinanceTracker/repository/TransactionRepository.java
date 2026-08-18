@@ -9,12 +9,21 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+
     Page<Transaction> findAllTransactionsByAccountId(Long accountId, Pageable pageable);
+
+    List<Transaction> findAllTransactionsByAccountId(Long accountId);
+
+    @Query(value = "SELECT * FROM transactions t " +
+            "WHERE t.account = :accountId " +
+            "AND t.timestamp LIKE :yearMonth%", nativeQuery = true)
+    List<Transaction> findAllTransactionsByAccountIdAndYearMonth(Long accountId, String yearMonth);
 
     @Query(value = "SELECT t.account FROM transactions t " +
             "WHERE t.transaction_id = :id", nativeQuery = true)

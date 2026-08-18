@@ -12,20 +12,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Not a valid email ID")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Pattern(regexp = "^(?!.*\\s)(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "Password must contain at least eight characters, one digit, one lowercase, one uppercase, and one special character")
     private String password;
 
-    @NotBlank(message = "please specify the currency")
     private String currency;
 }

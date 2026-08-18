@@ -21,7 +21,6 @@ public class Account {
     @JoinColumn(name= "user")
     private User user;
 
-    @NotBlank(message = "Name is required")
     private String name;
 
     private BigDecimal balance;
