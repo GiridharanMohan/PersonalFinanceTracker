@@ -29,7 +29,7 @@ public class UserService {
 
         String email = user.getEmail();
         User requestedUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException(Constant.INVALID_CREDENTIALS));
+                .orElseThrow(() -> new UsernameNotFoundException(Constant.INVALID_CREDENTIALS));
 
         if(!passwordEncoder.matches(user.getPassword(), requestedUser.getPassword())) {
             log.error("Invalid email or password. User ID: {}", requestedUser.getId());

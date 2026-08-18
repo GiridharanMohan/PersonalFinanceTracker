@@ -1,5 +1,6 @@
 package com.dev.personalFinanceTracker.service;
 
+import com.dev.personalFinanceTracker.exception.DataNotFoundException;
 import com.dev.personalFinanceTracker.model.*;
 import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.model.dto.TransactionRequestDto;
@@ -39,7 +40,7 @@ public class TransactionService {
     public ResponseDto<String> createTransaction(TransactionRequestDto transactionRequestDto) {
         User user = util.getCurrentUser();
         Account account = accountRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException(Constant.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() -> new DataNotFoundException(Constant.ACCOUNT_NOT_FOUND));
 
         Transaction transactionEntity = new Transaction();
         transactionEntity.setAccount(account);
@@ -55,7 +56,7 @@ public class TransactionService {
     public Page<TransactionResponseDto> getMonthlySummary(int month, int year, int page, int size) {
         User currentUser = util.getCurrentUser();
         Account userAccount = accountRepository.findByUserId(currentUser.getId())
-                .orElseThrow(() -> new RuntimeException(Constant.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() -> new DataNotFoundException(Constant.ACCOUNT_NOT_FOUND));
 
         LocalDate startDate = YearMonth.of(year, month).atDay(1);
         LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
@@ -82,7 +83,7 @@ public class TransactionService {
     public ResponseDto<Map<Category, Double>> getFinanceBreakdownByMonth(int month, int year) {
         User currentUser = util.getCurrentUser();
         Account userAccount = accountRepository.findByUserId(currentUser.getId())
-                .orElseThrow(() -> new RuntimeException(Constant.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() -> new DataNotFoundException(Constant.ACCOUNT_NOT_FOUND));
 
         String monthOfYear = YearMonth.of(year, month).format(DateTimeFormatter.ofPattern("yyyy-MM"));
         List<Transaction> transactionEntities = transactionRepository.findAllTransactionsByAccountIdAndYearMonth(userAccount.getId(), monthOfYear);
@@ -99,13 +100,13 @@ public class TransactionService {
     public ResponseDto<String> deleteTransaction(long id) {
         User user = util.getCurrentUser();
         Account account = accountRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException(Constant.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() -> new DataNotFoundException(Constant.ACCOUNT_NOT_FOUND));
 
         Long accountId = transactionRepository.findAccountIdByTransactionId(id)
-                .orElseThrow(() -> new RuntimeException(Constant.TRANSACTION_NOT_FOUND));
+                .orElseThrow(() -> new DataNotFoundException(Constant.TRANSACTION_NOT_FOUND));
 
         if(accountId != account.getId())
-            throw new RuntimeException(Constant.TRANSACTION_NOT_FOUND);
+            throw new DataNotFoundException(Constant.TRANSACTION_NOT_FOUND);
 
         transactionRepository.deleteById(id);
         return new ResponseDto<>(true, null, "Transaction deleted successfully");
@@ -114,7 +115,7 @@ public class TransactionService {
     public Page<TransactionResponseDto> getAllTransaction(int page, int size) {
         User user = util.getCurrentUser();
         Account userAccount = accountRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException(Constant.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() -> new DataNotFoundException(Constant.ACCOUNT_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(--page, size);
         Page<Transaction> transactions = transactionRepository.findAllTransactionsByAccountId(

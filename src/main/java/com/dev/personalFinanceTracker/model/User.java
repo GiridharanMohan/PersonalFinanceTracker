@@ -12,17 +12,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Not a valid email ID")
     private String email;
 
     private String password;
 
-    @NotBlank(message = "please specify the currency")
     private String currency;
 }

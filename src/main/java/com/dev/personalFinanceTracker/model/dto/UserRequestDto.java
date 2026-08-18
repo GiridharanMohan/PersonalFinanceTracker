@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class UserRequestDto {
 
     @NotBlank(message = "Email is required")
-    @Email
+    @Email(message = "Not a valid Email ID")
     private String email;
 
     @NotBlank(message = "Password is required")
@@ -19,5 +19,6 @@ public class UserRequestDto {
             message = "Password must contain at least eight characters, one digit, one lowercase, one uppercase, and one special character")
     private String password;
 
+    //Todo: use enum
     private String currency;
 }

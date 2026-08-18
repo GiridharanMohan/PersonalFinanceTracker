@@ -1,5 +1,6 @@
 package com.dev.personalFinanceTracker.service;
 
+import com.dev.personalFinanceTracker.exception.DataNotFoundException;
 import com.dev.personalFinanceTracker.model.Account;
 import com.dev.personalFinanceTracker.model.User;
 import com.dev.personalFinanceTracker.model.dto.AccountRequestDto;
@@ -7,13 +8,13 @@ import com.dev.personalFinanceTracker.model.dto.AccountResponseDto;
 import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.repository.AccountRepository;
 import com.dev.personalFinanceTracker.repository.UserRepository;
+import com.dev.personalFinanceTracker.util.Constant;
 import com.dev.personalFinanceTracker.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -45,26 +46,22 @@ public class AccountService {
 
     public ResponseDto<AccountResponseDto> showAccount() {
         User user = util.getCurrentUser();
-        Optional<Account> account = accountRepository.findByUserId(user.getId());
+        Account account = accountRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new DataNotFoundException("No account is linked with the user"));
 
-        if (account.isEmpty())
-            return new ResponseDto<>(false, "No account is linked with the user", null);
-
-        Account myAccount = account.get();
         AccountResponseDto responseEntity = new AccountResponseDto();
-        responseEntity.setId(myAccount.getId());
-        responseEntity.setName(myAccount.getName());
-        responseEntity.setEmail(myAccount.getUser().getEmail());
-        responseEntity.setBalance(myAccount.getBalance());
+        responseEntity.setId(account.getId());
+        responseEntity.setName(account.getName());
+        responseEntity.setEmail(account.getUser().getEmail());
+        responseEntity.setBalance(account.getBalance());
         return new ResponseDto<>(true, null, responseEntity);
     }
 
     public ResponseDto<String> editAccount(AccountRequestDto accountRequestDto) {
-        String msg = "Account does not exists";
         User user = util.getCurrentUser();
-
         Account account = accountRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException(msg));
+                .orElseThrow(() -> new DataNotFoundException(Constant.ACCOUNT_NOT_FOUND));
+
         account.setName(accountRequestDto.getName());
         accountRepository.save(account);
         return new ResponseDto<>(true, null, "Changes are done successfully");
@@ -72,17 +69,12 @@ public class AccountService {
 
     //Todo: when deleting an account, the associated transactions should also be deleted.
     public ResponseDto<String> deleteAccount() {
-        String msg = "Account does not exists";
-        try {
-            User user = util.getCurrentUser();
-            Account account = accountRepository.findByUserId(user.getId())
-                    .orElseThrow(() -> new RuntimeException(msg));
+        User user = util.getCurrentUser();
+        Account account = accountRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new DataNotFoundException(Constant.ACCOUNT_NOT_FOUND));
 
-            accountRepository.deleteById(account.getId());
-            return new ResponseDto<>(true, null, "Account deleted successfully");
-        } catch (Exception e) {
-            log.error("Error occurred while deleting the account - {}", e.getMessage());
-            return new ResponseDto<>(false, msg, null);
-        }
+        accountRepository.deleteById(account.getId());
+        return new ResponseDto<>(true, null, "Account deleted successfully");
+
     }
 }

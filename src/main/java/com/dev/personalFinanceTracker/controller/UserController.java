@@ -1,6 +1,5 @@
 package com.dev.personalFinanceTracker.controller;
 
-import com.dev.personalFinanceTracker.model.User;
 import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.model.dto.UserRequestDto;
 import com.dev.personalFinanceTracker.service.UserService;
