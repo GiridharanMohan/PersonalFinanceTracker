@@ -17,7 +17,7 @@ public class Account {
     @Column(name = "account_id")
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "user")
     private User user;
 
