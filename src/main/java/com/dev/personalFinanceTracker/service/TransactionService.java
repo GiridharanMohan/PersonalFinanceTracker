@@ -1,6 +1,7 @@
 package com.dev.personalFinanceTracker.service;
 
 import com.dev.personalFinanceTracker.exception.DataNotFoundException;
+import com.dev.personalFinanceTracker.mapper.TransactionMapper;
 import com.dev.personalFinanceTracker.model.*;
 import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.model.dto.TransactionRequestDto;
@@ -10,6 +11,7 @@ import com.dev.personalFinanceTracker.repository.TransactionRepository;
 import com.dev.personalFinanceTracker.util.Constant;
 import com.dev.personalFinanceTracker.util.Util;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -37,22 +38,19 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    private TransactionMapper transactionMapper = Mappers.getMapper(TransactionMapper.class);
+
     public ResponseDto<String> createTransaction(TransactionRequestDto transactionRequestDto) {
         User user = util.getCurrentUser();
         Account account = accountRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new DataNotFoundException(Constant.ACCOUNT_NOT_FOUND));
 
-        Transaction transactionEntity = new Transaction();
-        transactionEntity.setAccount(account);
-        transactionEntity.setTransactionName(transactionRequestDto.getTransactionName());
-        transactionEntity.setTransactionType(transactionRequestDto.getTransactionType());
-        transactionEntity.setTransactionCategory(transactionRequestDto.getTransactionCategory());
-        transactionEntity.setAmount(transactionRequestDto.getAmount());
-        transactionEntity.setTimestamp(LocalDateTime.now());
+        Transaction transactionEntity = transactionMapper.mapTransactionRequestDtoToTransaction(transactionRequestDto, account);
         transactionRepository.save(transactionEntity);
         return new ResponseDto<>(true, null, "Successfully saved transaction");
     }
 
+    //Todo: fetch current users list and not all users
     public Page<TransactionResponseDto> getMonthlySummary(int month, int year, int page, int size) {
         User currentUser = util.getCurrentUser();
         Account userAccount = accountRepository.findByUserId(currentUser.getId())
@@ -65,17 +63,8 @@ public class TransactionService {
                                                                     endDate,
                                                                     PageRequest.of(--page, size));
 
-        Page<TransactionResponseDto> response = responseEntities.map(transaction -> {
-            TransactionResponseDto responseEntity = new TransactionResponseDto();
-            responseEntity.setId(transaction.getId());
-            responseEntity.setAccountId(userAccount.getId());
-            responseEntity.setName(transaction.getTransactionName());
-            responseEntity.setType(transaction.getTransactionType());
-            responseEntity.setCategory(transaction.getTransactionCategory());
-            responseEntity.setAmount(transaction.getAmount());
-            responseEntity.setTimestamp(transaction.getTimestamp());
-            return responseEntity;
-        });
+        Page<TransactionResponseDto> response = responseEntities.map(transaction ->
+                transactionMapper.mapTransactionToTransactionResponseDto(transaction));
 
         return response;
     }
@@ -120,19 +109,9 @@ public class TransactionService {
         Pageable pageable = PageRequest.of(--page, size);
         Page<Transaction> transactions = transactionRepository.findAllTransactionsByAccountId(
                 userAccount.getId(), pageable);
-        //converting Transaction to TransactionDto manually for now.
-        //Todo: use mapper
-        Page<TransactionResponseDto> responseEntities = transactions.map(transaction -> {
-            TransactionResponseDto responseEntity = new TransactionResponseDto();
-            responseEntity.setId(transaction.getId());
-            responseEntity.setAccountId(userAccount.getId());
-            responseEntity.setName(transaction.getTransactionName());
-            responseEntity.setType(transaction.getTransactionType());
-            responseEntity.setCategory(transaction.getTransactionCategory());
-            responseEntity.setAmount(transaction.getAmount());
-            responseEntity.setTimestamp(transaction.getTimestamp());
-            return responseEntity;
-        });
+
+        Page<TransactionResponseDto> responseEntities = transactions.map(transaction ->
+                transactionMapper.mapTransactionToTransactionResponseDto(transaction));
         return responseEntities;
     }
 }

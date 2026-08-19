@@ -1,6 +1,7 @@
 package com.dev.personalFinanceTracker.service;
 
 import com.dev.personalFinanceTracker.exception.DataNotFoundException;
+import com.dev.personalFinanceTracker.mapper.AccountMapper;
 import com.dev.personalFinanceTracker.model.Account;
 import com.dev.personalFinanceTracker.model.User;
 import com.dev.personalFinanceTracker.model.dto.AccountRequestDto;
@@ -11,6 +12,7 @@ import com.dev.personalFinanceTracker.repository.UserRepository;
 import com.dev.personalFinanceTracker.util.Constant;
 import com.dev.personalFinanceTracker.util.Util;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,8 @@ public class AccountService {
 
     @Autowired
     private UserRepository userRepository;
+
+    private AccountMapper accountMapper = Mappers.getMapper(AccountMapper.class);
 
     //currently 1 user can have 1 account
     //but actual plan is to make 1 person can have multiple accounts.
@@ -49,11 +53,7 @@ public class AccountService {
         Account account = accountRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new DataNotFoundException("No account is linked with the user"));
 
-        AccountResponseDto responseEntity = new AccountResponseDto();
-        responseEntity.setId(account.getId());
-        responseEntity.setName(account.getName());
-        responseEntity.setEmail(account.getUser().getEmail());
-        responseEntity.setBalance(account.getBalance());
+        AccountResponseDto responseEntity = accountMapper.mapAccountToAccountResponseDto(account);
         return new ResponseDto<>(true, null, responseEntity);
     }
 
