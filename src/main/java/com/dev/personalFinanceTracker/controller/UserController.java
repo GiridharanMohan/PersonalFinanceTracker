@@ -19,6 +19,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    //Todo: use different dto for login request
     @PostMapping(path = "/login")
     public ResponseEntity<ResponseDto<String>> login(@Valid @RequestBody UserRequestDto user){
         ResponseDto<String> responseDto = userService.userLogin(user);
