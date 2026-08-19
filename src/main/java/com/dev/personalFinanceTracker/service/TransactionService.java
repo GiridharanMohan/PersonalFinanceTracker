@@ -50,7 +50,6 @@ public class TransactionService {
         return new ResponseDto<>(true, null, "Successfully saved transaction");
     }
 
-    //Todo: fetch current users list and not all users
     public Page<TransactionResponseDto> getMonthlySummary(int month, int year, int page, int size) {
         User currentUser = util.getCurrentUser();
         Account userAccount = accountRepository.findByUserId(currentUser.getId())
@@ -58,14 +57,14 @@ public class TransactionService {
 
         LocalDate startDate = YearMonth.of(year, month).atDay(1);
         LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
-        Page<Transaction> responseEntities = transactionRepository.getAllTransactionsByMonthAndYear(
+        Page<Transaction> responseEntities = transactionRepository.getUserTransactionsByMonthAndYear(
+                                                                    userAccount.getId(),
                                                                     startDate,
                                                                     endDate,
                                                                     PageRequest.of(--page, size));
 
         Page<TransactionResponseDto> response = responseEntities.map(transaction ->
                 transactionMapper.mapTransactionToTransactionResponseDto(transaction));
-
         return response;
     }
 

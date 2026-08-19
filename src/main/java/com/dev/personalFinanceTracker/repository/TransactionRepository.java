@@ -30,7 +30,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<Long> findAccountIdByTransactionId(@Param(value = "id") long id);
 
     @Query(value = "SELECT * FROM transactions t " +
-            "WHERE t.timestamp >= :startDate " +
+            "WHERE t.account = :accountId AND " +
+            "t.timestamp >= :startDate " +
             "AND t.timestamp <= :endDate", nativeQuery = true)
-    Page<Transaction> getAllTransactionsByMonthAndYear(LocalDate startDate, LocalDate endDate, Pageable pageable);
+    Page<Transaction> getUserTransactionsByMonthAndYear(Long accountId, LocalDate startDate, LocalDate endDate, Pageable pageable);
 }
