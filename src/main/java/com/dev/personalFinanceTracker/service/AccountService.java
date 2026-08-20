@@ -8,6 +8,7 @@ import com.dev.personalFinanceTracker.model.dto.AccountRequestDto;
 import com.dev.personalFinanceTracker.model.dto.AccountResponseDto;
 import com.dev.personalFinanceTracker.model.dto.ResponseDto;
 import com.dev.personalFinanceTracker.repository.AccountRepository;
+import com.dev.personalFinanceTracker.repository.TransactionRepository;
 import com.dev.personalFinanceTracker.repository.UserRepository;
 import com.dev.personalFinanceTracker.util.Constant;
 import com.dev.personalFinanceTracker.util.Util;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -30,6 +32,9 @@ public class AccountService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     private AccountMapper accountMapper = Mappers.getMapper(AccountMapper.class);
 
@@ -67,14 +72,15 @@ public class AccountService {
         return new ResponseDto<>(true, null, "Changes are done successfully");
     }
 
-    //Todo: when deleting an account, the associated transactions should also be deleted.
+    @Transactional
     public ResponseDto<String> deleteAccount() {
         User user = util.getCurrentUser();
-        Account account = accountRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new DataNotFoundException(Constant.ACCOUNT_NOT_FOUND));
+        Long accountId = accountRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new DataNotFoundException(Constant.ACCOUNT_NOT_FOUND))
+                .getId();
 
-        accountRepository.deleteById(account.getId());
+        transactionRepository.deleteAllByAccountId(accountId);
+        accountRepository.deleteById(accountId);
         return new ResponseDto<>(true, null, "Account deleted successfully");
-
     }
 }

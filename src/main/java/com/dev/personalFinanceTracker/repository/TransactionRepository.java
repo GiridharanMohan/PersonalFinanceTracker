@@ -20,6 +20,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findAllTransactionsByAccountId(Long accountId);
 
+    void deleteAllByAccountId(Long accountId);
+
     @Query(value = "SELECT * FROM transactions t " +
             "WHERE t.account = :accountId " +
             "AND t.timestamp LIKE :yearMonth%", nativeQuery = true)
